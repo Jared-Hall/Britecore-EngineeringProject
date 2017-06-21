@@ -26,3 +26,7 @@ on.
 
 To run this program simply double click run.cmd and point a browser to 127.0.0.1:5000
 Requires: flask, 
+
+login for now
+ID: admin
+Pass: <leave blank>
