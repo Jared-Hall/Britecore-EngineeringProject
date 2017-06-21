@@ -1,0 +1,16 @@
+MANIFEST.in
+SM_SYS/__init__.py
+SM_SYS/db.sql
+SM_SYS/server_main.py
+SM_SYS.egg-info/PKG-INFO
+SM_SYS.egg-info/SOURCES.txt
+SM_SYS.egg-info/dependency_links.txt
+SM_SYS.egg-info/requires.txt
+SM_SYS.egg-info/top_level.txt
+SM_SYS/static/bootstrap.min.css
+SM_SYS/static/index.css
+SM_SYS/static/index.js
+SM_SYS/static/jquery-3.2.1.min.js
+SM_SYS/static/knockout-3.4.2.js
+SM_SYS/static/sammy-latest.min.js
+SM_SYS/templates/index.html
