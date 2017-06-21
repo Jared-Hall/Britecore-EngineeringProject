@@ -23,3 +23,6 @@ They just have some text in a solid background color.
 This contains the main part of the UI that the user will be interacting with.
 It largly consists of a box with changing elements based upon the hash-page the user is currently
 on.
+
+To run this program simply double click run.cmd and point a browser to 127.0.0.1:5000
+Requires: flask, 
