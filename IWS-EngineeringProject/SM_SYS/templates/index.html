@@ -1,0 +1,458 @@
+<!--
+Programmed by: Jared Hall
+Date: 06/14/2017
+Head template: this template specifies the view for the SPA.
+This view has the following general structure.
+Login->Display_systems->Features
+The view communicates with the view model in the intermediate backend
+and a ReST interface in the server. Emhasis for the view is on the layout of the
+UI elements.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset='utf-8' >
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="Jared Hall">
+	<meta name="discription" content="This is a software management system for managing the features to be programmed in a software.">
+
+	<!-- Javascript libraries -->
+	<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/knockout-3.4.2.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/md5.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
+
+	<!-- CSS libraries-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+	
+</head>
+
+<body>
+	<!--Header-->
+	<div id="wrapper">
+		<header class="header">
+			<div class="container-fluid bg-primary">
+				<div class="row">
+					<h1 class="text-center">Software Management System</h1>
+				</div>
+			</div>
+		</header>
+		
+		<!--UI Portal-->
+		<div class="container-fluid UI">
+			<div class="row">
+				<div class="panel panel-primary portal">
+							<!-- Panel heading -->
+					<div class="panel-heading clearfix">
+						<h4 class="panel-title pull-left" data-bind="text: panel_header"></h4>
+						<div class="btn-group pull-right" role="group">
+							<button class="btn btn-primary" data-bind="visible: manage, click: load_ds"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>    Back</button>
+							<button class="btn btn-primary" data-bind="click: goto_readme">Help</button>
+							<button class="btn btn-primary " data-bind="visible: logged_in, click: get_login">Logout    <span class="glyphicon glyphicon-off" aria-hidden="true"></span></button>
+						</div>
+					</div>
+					<div class="panel-body" id="portal_body" data-bind="template: { name: current_panel }">
+						<!-- This SPA uses template baised navigateion. This is accomplished by dynamically
+						rendering a single element based upon the users nav. This is quicker than hash navigation
+						and results in an application that feels more like a widget than a web-page.-->
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!--Footer-->
+		<footer class="footer">
+			<div class="container-fluid">
+				<div class="row">
+					<p class="text-muted text-center">Last date modified: 06/27/2017 </p>
+					<p class="text-muted text-center">Maintained by: Jared Hall </p>
+				</div>
+			</div>
+		</footer>
+	</div>
+	
+	<!-- Panel templates -->
+	<!-- Login panel -->
+	<script type="text/html" id="login-template">
+		<div class="login">
+			<div class="well well-md">
+				<form class="form-horizontal" data-bind="submit: post_login">
+					<!--sets up entry for ID-->
+					<div class="form-group"> 
+						<label for="ID" class="col-sm-6 control-label">Employee ID</label>
+						<div class="col-sm-6"><input type="text" class="form-control" data-bind="value: ID" placeholder="Employee ID"></div>
+					</div>
+					<!--sets up entry for password-->
+					<div class="form-group"> 
+						<label for="password" class="col-sm-6 control-label">Password</label>
+						<div class="col-sm-6"><input type="password" class="form-control" data-bind="value: pass" placeholder="password"></div>
+					</div>
+					<!--sets up submit button-->
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-2">
+							<button type="submit" class="btn btn-primary btn-lg">Sign-in</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</script>
+		
+	<!-- Display Systems Panel -->
+	<script type="text/html" id="DS-template">
+			<div class="panel panel-primary" id="display_panel">
+				<div class="panel-body" id="display">
+					<h4><span class="label label-primary" id="display_label">Systems</span></h4>
+					<div class="btn-group-vertical btn-block" role="group" id="sharp" data-bind="foreach: systems">
+						<button type="button" class="btn btn-primary" id="sharp" data-bind="text: $data, click: $parent.get_systems_selected"></button>
+					</div>
+				</div>
+				<div class="panel-footer options clearfix">
+					<h4 class="panel-title pull-left footer_title">Options</h4>
+					<div class="btn-group" role="group">
+						<button class="btn btn-primary" data-bind="visible: is_man, click: load_ms">Manage Systems</button>
+						<button class="btn btn-primary" data-bind="visible: selected, click: load_mf">Manage Features</button>
+					</div>
+				</div>
+				
+			</div>
+			<div class="well well-lg">
+				<!--This div displays the default message if the user has not selected a system-->
+				<div data-bind="ifnot: selected">
+					<div class="page-header"><h4>Welcome to the Software Management system.</h4></div>
+					<ul class="list-group">
+						<li class="list-group-item">Click on a system to view its information.</li>
+						<li class="list-group-item">To manage a systems features, first select a system then click the "manage features" button below.</li>
+						<li class="list-group-item">Click on "Manage Systems" to add/edit/remove a system</li>
+						<li class="list-group-item">Click help to view the README on github for more information</li>
+					</ul>
+				</div>
+				
+				<!--This div displays the system information when the user selects a system from the systems list-->
+				<div data-bind="if: selected">
+					<div class="panel panel-default">
+						<div class="panel-heading clearfix">
+							<h4 class="panel-title pull-left">System Information</h4>
+							<div class="btn-group pull-right" role="group">
+								<button class="btn btn-default" data-bind="click: clear_systems">Clear</button>
+							</div>
+						</div>
+						<table class="table table-bordered">
+							<tbody>
+								<tr>
+									<td><strong>Name: </strong></td>
+									<td data-bind="text: sys_name"></td>
+								</tr>
+								<tr>
+									<td><strong>Discription: </strong></td>
+									<td><textarea class="form-control" rows="3" data-bind="value: sys_disc" readonly></textarea></td>
+								</tr>
+								<tr>
+									<td><strong>Number of Features: </strong></td>
+									<td data-bind="text: sys_num_feature"></td>
+								</tr>
+								<tr>
+									<td><strong>Clients: </strong></td>
+									<td>
+										<div class="well-sm display_clients">
+											<ul class="list-inline" data-bind="foreach: sys_clients">
+												<li data-bind="text: $data"></li>
+											</ul>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Product Areas: </strong></td>
+									<td>
+										<div class="well-sm display_clients">
+											<ul class="list-inline" data-bind="foreach: sys_areas">
+												<li data-bind="text: $data"></li>
+											</ul>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Status</strong></td>
+									<td><span class="label" data-bind="text: sys_status, css: dev_status"></span></td>
+								</tr>
+							</tbody>
+							
+						</table>
+					</div>
+				</div>
+				
+			</div>
+	</script>
+	
+	<!-- Manage Systems Panel -->
+	<script type="text/html" id="MS-template">
+		<div class="panel panel-primary" id="display_panel">
+			<div class="panel-body" id="display">
+				<h4><span class="label label-primary" id="display_label">Systems</span></h4>
+				<div class="btn-group-vertical btn-block" role="group" id="sharp" data-bind="foreach: systems">
+					<button type="button" class="btn btn-primary" id="sharp" data-bind="text: $data, click: $parent.get_systems_selected"></button>
+				</div>
+			</div>
+			<div class="panel-footer options clearfix">
+				<h4 class="panel-title pull-left footer_title">Options</h4>
+				<div class="btn-group" role="group">
+					<button class="btn btn-primary" data-bind="click: load_form">Add System</button>
+					<button class="btn btn-primary" data-bind="visible: edit, click: load_mf">Manage Features</button>
+					
+				</div>
+			</div>
+		</div>
+		<div class="well well-lg">
+			<!--This div displays the default message if the user has not selected a system-->
+			<div data-bind="ifnot: selected">
+				<div class="page-header"><h4>This is the "Systems Management" Page.</h4></div>
+				<ul class="list-group">
+					<li class="list-group-item">Click on a system to view/edit its information.</li>
+					<li class="list-group-item">Click "Create System" to add a new software system.</li>
+					<li class="list-group-item">To manage a selected systems features click "Manage Features".</li>
+					<li class="list-group-item">Click help to view the README on github for more information.</li>
+				</ul>
+			</div>
+			
+			<!--This div displays the system information when the user selects a system from the systems list-->
+			<div data-bind="if: selected">
+				<!-- Panel heading contains contextual information and some buttons-->
+				<div class="panel panel-default">
+					<div class="panel-heading clearfix">
+						<h4 class="panel-title pull-left">System Information</h4>
+						<div class="btn-group pull-right" role="group">
+							<button class="btn btn-default" data-bind="click: clear_systems">Clear Form</button>
+							<button class="btn btn-default" data-bind="click: save_system">Save System</button>
+							<button class="btn btn-default" data-bind="visible: sys_del, click: delete_sys">Delete system</button>
+						</div>
+					</div>
+					<!-- This is the body of the form. bordered by using a table that contains the inputs for the form-->
+					<div class="panel-body">	
+						<table class="table table-bordered">
+							<tbody>
+								<tr>
+									<td><strong>Name: </strong></td>
+									<td><input type="text" class="form-control" data-bind="value: sys_name" placeholder="<System Name>"> </td>
+								</tr>
+								<tr>
+									<td><strong>Discription: </strong></td>
+									<td><textarea class="form-control" rows="3" data-bind="value: sys_disc" placeholder="<Discription>"></textarea></td>
+								</tr>
+								<tr>
+									<td><strong>Number of Features: </strong></td>
+									<td data-bind="text: sys_num_feature"></td>
+								</tr>
+								<tr>
+									<td><strong>Clients: </strong></td>
+									<td>
+										<div class="well-sm display_clients">
+											<ul class="list-inline" data-bind="foreach: sys_clients">
+												<li data-bind="text: $data"></li>
+											</ul>
+										</div>
+										<div class="input-group">
+											<input type="text" class="form-control" placeholder="<Client>" data-bind="value: sys_client_id">
+											<span class="input-group-btn">
+												<button class="btn btn-default" data-bind="click: add_client">Add</button>
+												<button class="btn btn-default" data-bind="click: remove_client">Remove</button>
+											</span>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Product Areas: </strong></td>
+									<td>
+										<div class="well-sm display_clients">
+											<ul class="list-inline" data-bind="foreach: sys_areas">
+												<li data-bind="text: $data"></li>
+											</ul>
+										</div>
+										<div class="input-group">
+											<input type="text" class="form-control" placeholder="<Product Area>" data-bind="value: sys_area_id">
+											<span class="input-group-btn">
+												<button class="btn btn-default" data-bind="click: add_area">Add</button>
+												<button class="btn btn-default" data-bind="click: remove_area">Remove</button>
+											</span>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Status</strong></td>
+									<td>
+										<label class="radio-inline"><input type="radio" name="optr" value="Planning" data-bind="checked: sys_status"><span class="label label-info">Pln</span></label>
+										<label class="radio-inline"><input type="radio" name="optr" value="In Development" data-bind="checked: sys_status"><span class="label label-success">Dev</span></label>
+										<label class="radio-inline"><input type="radio" name="optr" value="In Maintenance" data-bind="checked: sys_status"><span class="label label-warning">Mat</span></label>
+										<label class="radio-inline"><input type="radio" name="optr" value="Finished" data-bind="checked: sys_status"><span class="label label-default">Fin</span></label>
+										<label class="radio-inline"><input type="radio" name="optr" value="In Repair" data-bind="checked: sys_status"><span class="label label-danger">Rpr</span></label>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+						</div>
+					</div>
+	</script>
+	
+	<!-- Manage Features Panel -->
+	<script type="text/html" id="MF-template">
+		<div class="panel panel-primary" id="display_panel">
+			<div class="panel-body" id="display">
+				<h4><span class="label label-primary" id="display_label">Features</span></h4>
+				<div class="btn-group-vertical btn-block" role="group" id="sharp" data-bind="foreach: features">
+					<button type="button" class="btn btn-primary" id="sharp" data-bind="text: $data, click: $parent.get_features_selected"></button>
+				</div>
+			</div>
+			<div class="panel-footer options clearfix">
+				<h4 class="panel-title pull-left footer_title">Options</h4>
+				<div class="btn-group" role="group">
+					<button class="btn btn-primary" data-bind="click: add_feature">Add Feature</button>
+				</div>
+			</div>
+		</div>
+			<div class="well well-lg">
+				<!--This div displays the default message if the user has not selected a system-->
+				<div data-bind="ifnot: selected">
+					<div class="page-header"><h4>This is the "Features Management" Portal.</h4></div>
+					<ul class="list-group">
+						<li class="list-group-item">Click on a feature to view/edit its information.</li>
+						<li class="list-group-item">Click on a feature and then click "Delete feature" to remove said feature.</li>
+						<li class="list-group-item">Click "Build new feature" to add a new feature to the software system.</li>
+						<li class="list-group-item">Click help to view the README on github for more information.</li>
+					</ul>
+				</div>
+				
+				<!--This div displays the system information when the user selects a system from the systems list-->
+				<div data-bind="if: selected">
+					<!-- Panel heading contains contextual information and some buttons-->
+					<div class="panel panel-default">
+						<div class="panel-heading clearfix">
+							<h4 class="panel-title pull-left">System Information</h4>
+							<div class="btn-group pull-right" role="group">
+								<button class="btn btn-default" data-bind="click: clear_features">Clear Form</button>
+								<button class="btn btn-default" data-bind="visible: !edit(), click: edit_feature">Edit Feature</button>
+								<button class="btn btn-default" data-bind="visible: edit, click: save_feature">Save Feature</button>
+								<button class="btn btn-default" data-bind="visible: sys_del, click: delete_feat">Delete Feature</button>
+							</div>
+						</div>
+						<!-- This panel is "context sensitive" it will display one of two panels should a user click the edit feature button-->
+						<div class="panel-body">	
+							<table class="table table-bordered">
+								<tbody>
+									<tr>
+										<td><strong>Title: </strong></td>
+										<td>
+											<!-- ko ifnot: edit -->
+											<p data-bind="text: feat_title"></p>
+											<!-- /ko -->
+											
+											<!-- ko if: edit -->
+											<input type="text" class="form-control" data-bind="value: feat_title" placeholder="<Feature title>"> 
+											<!-- /ko -->
+										</td>
+									</tr>
+									<tr>
+										<td><strong>Discription: </strong></td>
+										<td>
+											<!-- ko ifnot: edit -->
+											<textarea class="form-control" rows="3" data-bind="value: feat_disc" placeholder="<Discription>" readonly></textarea>
+											<!-- /ko -->
+											
+											<!-- ko if: edit -->
+											<textarea class="form-control" rows="3" data-bind="value: feat_disc" placeholder="<Discription>"></textarea>
+											<!-- /ko -->
+										</td>
+									</tr>
+									<tr>
+										<td><strong>Client: </strong></td>
+										<td>
+										<!-- ko ifnot: edit -->
+										<p data-bind="text: feat_client"></p>
+										<!-- /ko -->
+										
+										<!-- ko if: edit -->
+										<div class="input-group">
+											<input type="text" class="form-control" data-bind="value: feat_client" placeholder="<Client>" readonly/>
+											<span class="input-group-btn">
+												<div class="dropdown">
+													<button class="btn btn-default dropdown-toggle" type="button" id="client_list" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+													  Clients
+													  <span class="caret"></span>
+													</button>
+													<ul class="dropdown-menu clients_menu" aria-labelledby="client_list" data-bind="foreach: sys_clients">
+													  <li><a  data-bind="text: $data, click: $root.select_client"></a></li>
+													</ul>
+												</div>
+											</span>
+										</div>
+										<!-- /ko -->
+										</td>
+									</tr>
+									<tr>
+										<td><strong>Client Priority:</strong></td>
+										<td>
+											<!-- ko ifnot: edit -->
+											<p data-bind="text: feat_priority"></p>
+											<!-- /ko -->
+											
+											<!-- ko if: edit -->
+											<input type="text" class="form-control" data-bind="value: feat_priority" placeholder="Priority">
+											<!-- /ko -->
+										</td>
+									</tr>
+									<tr>
+										<td><strong>Target Date:</strong></td>
+										<td>
+											<!-- ko ifnot: edit -->
+											<p data-bind="text: feat_date"></p>
+											<!-- /ko -->
+											
+											<!-- ko if: edit -->
+											<input type="text" class="form-control" data-bind="value: feat_date" placeholder="<Date>" size="10">
+											<!-- /ko -->
+										</td>
+									</tr>
+									<tr>
+										<td><strong>Product Area:</strong></td>
+										<td>
+											<!-- ko ifnot: edit -->
+											<p data-bind="text: feat_area"></p>
+											<!-- /ko -->
+											
+											<!-- ko if: edit -->
+											<div class="input-group">
+												<input type="text" class="form-control" data-bind="value: feat_area" placeholder="<Product Area>" readonly/>
+												<span class="input-group-btn">
+													<div class="dropdown">
+														<button class="btn btn-default dropdown-toggle" type="button" id="catagory_list" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+														  Product Areas
+														  <span class="caret"></span>
+														</button>
+														<ul class="dropdown-menu clients_menu" aria-labelledby="client_list" data-bind="foreach: sys_areas">
+														  <li><a  data-bind="text: $data, click: $root.select_area"></a></li>
+														</ul>
+													</div>
+												</span>
+											</div>
+											<!-- /ko -->
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<!--Footer for the form that contains the add/save system -->
+					</div>
+				</div>
+			</div>
+	</script>
+
+
+</body>
+
+</html>
