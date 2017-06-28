@@ -74,18 +74,18 @@ def login():
 	return response
 
 #this view allows the user to interct with the stored system data -system-wide operations are supported here
-@Web_App.route('/systems/<method>', methods=['GET', 'POST', 'DELETE'])
+@Web_App.route('/systems/<method>', methods=['GET', 'POST', 'UPDATE', 'DELETE'])
 def systems(method):
 	response = None
 	logged_in = False;
 	is_man = False;
 
 	try:
-		#STEP-1: See if the user is logged in
+		#See if the user is logged in
 		logged_in = session['logged_in']
 		is_man = session['is_man']
 		
-		#STEP-2: users requests are sorted by rest-call
+		#users requests are sorted by rest-call
 		if(request.method == 'GET'):
 			#if request is get, fetch system information for logged in user
 			if(method=='all'):
@@ -97,11 +97,86 @@ def systems(method):
 				#if method is selected, return a dictionary containing the data of the selected system
 				sys_id = request.args.get('id')
 				#================REPLACE WITH DB====================
-				systems = {"name": sys_id, "num_features": 12, "cust_id": "Massive Dynamic", "status": "In Development", "disc": "This is where a discription of the softwaresystem would go."}
+				systems = {"name": sys_id, "num_features": 12, "clients": ["Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C"], "areas":['Policies', 'Billing', 'Claims', 'Reports'], "status": "In Development", "disc": "This is where a discription of the softwaresystem would go."}
 				#===================================================
 			else:
 				raise Exception("Method_Error")
 			response = Web_App.response_class(json.dumps(systems), content_type='application/json')
+		elif(request.method == 'POST'):
+			#if request method is post, then save  new system to DB
+			#=======================Replace with DB==================
+			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			#========================================================
+		elif(request.method == 'UPDATE'):
+			#if request method is update, then overwrite system info in DB
+			#=======================Replace with DB==================
+			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			#========================================================
+		elif(request.method == 'DELETE'):
+			#if request method is delete, then remove system from DB
+			#=======================Replace with DB==================
+			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			#========================================================
+		else:
+			#if request method is post, then save  new system to DB
+			#=======================Replace with DB==================
+			response = Web_App.response_class(json.dumps(False), content_type='application/json')
+			#========================================================
+	except:
+		response = Web_App.response_class(json.dumps(False), content_type='application/json')
+
+	return response
+
+@Web_App.route('/features/<method>', methods=['GET', 'POST', 'UPDATE', 'DELETE'])
+def features(method):
+	response = None
+	logged_in = False;
+	is_man = False;
+
+	try:
+		#See if the user is logged in
+		logged_in = session['logged_in']
+		is_man = session['is_man']
+		
+		#users requests are sorted by rest-call
+		if(request.method == 'GET'):
+			#if request is get, fetch feature information for logged in user
+			if(method=='all'):
+				#if method is all, return a list of the current features for a given system
+				system = request.args.get('system');
+				#===========REPLACE WITH DB======================
+				feature = ['def_feature_1', 'default_feature_2']
+				#================================================
+			elif(method=='selected'):
+				#if method is selected, return a dictionary containing the data of the selected feature
+				sys_id = request.args.get('system')
+				feat_id = request.args.get('feature')
+				#================REPLACE WITH DB====================
+				feature = {"feat_title": "Login Button", "feat_disc":"This is were the feature discription would go.", "feat_client":"Client A", "feat_priority": 2, "feat_date": "01/09/1990", "feat_area":"Policies" }
+				#===================================================
+			else:
+				raise Exception("Method_Error")
+			response = Web_App.response_class(json.dumps(feature), content_type='application/json')
+		elif(request.method == 'POST'):
+			#if request method is post, then save  new feature to DB - system name is in the request for rest of methods
+			#=======================Replace with DB==================
+			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			#========================================================
+		elif(request.method == 'UPDATE'):
+			#if request method is update, then overwrite feature info in system
+			#=======================Replace with DB==================
+			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			#========================================================
+		elif(request.method == 'DELETE'):
+			#if request method is delete, then remove feature from system
+			#=======================Replace with DB==================
+			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			#========================================================
+		else:
+			#if request method is post, then add new feature
+			#=======================Replace with DB==================
+			response = Web_App.response_class(json.dumps(False), content_type='application/json')
+			#========================================================
 	except:
 		response = Web_App.response_class(json.dumps(False), content_type='application/json')
 

@@ -1,68 +1,122 @@
-body {
-  margin-bottom: 60px;
+body, html {
+	height: 100%;
+	min-height: 100%;
+	margin: 0;
 }
 
-.container {
-	position: relative;
-	max-height: 800px;
-	min-height: 400px;
+#clients {
+	width: 100px;
+}
+
+.clients_menu {
+	height: auto;
+	max-height: 200px;
+	overflow: auto;
+}
+
+.display_clients {
 	width: 100%;
+	height: 45px;
+	background-color: #f5f5f5;
+	border: 1px solid #ccc;
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+	padding: 0;
+	overflow: auto;
 }
 
-#display {
+#display_panel {
 	margin: 0;
 	width: 150px;
-	height: 359px;
+	height: 499px;
 	float: left;
-	overflow: auto;
+	border-left: 0px;
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 }
 
-.footer{
-  position: absolute;
-  bottom: 0;
+#display {
+	overflow: auto;
+	height: 100%;
+}
+
+#display_label {
+	display: block;
+	height: 30px;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.footer {
+	min-width: 702px !important;
   width: 100%;
   height: 60px;
   background-color: #f5f5f5;
+	flex: none;
+	margin-top: 10px;
 }
 
-.header.container{
-	position: absolute;
-  top: 0;
-  width: 100%;
-  height: 10%;
+.footer_title {
+	height: 35px;
+	width: 150px;
+	border-right: 1px solid grey;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	}
+
+.form-horizontal {
+	width: 60%;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+.header{
+	min-width: 702px;
+	width: 100% !important;
+	height: 60px;
+	flex: none;
+	margin-bottom: 10px;
 }
 
+.login {
+	display: flex;
+	flex: auto;
+	-webkit-box-align: center;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
 
-.navButtons {
-	border-radius: 0;
+.options{
+	margin: 0;
+	padding: 0;
+	width: 700px;
+	min-height: 35px;
+	border: 1px solid #337ab7;
+	background-color:#337ab7;
+  color: #FFFFFF;
 }
 
 .panel-body {
 	padding: 0;
+	margin: 0;
 }
 
-.page-header {
+.page-header, h4 {
 	margin: 0;
 }
 
 .portal {
-	/*Positioning: portal is to be in the absolute center of page. */
-	position: absolute;
-	top: 100%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	
-	width: 602px;
-	height: 450px;
+	width: 702px;
+	height: 590px;
+	margin: 0;
+}
+
+#portal_body {
+	height: 535px;
 }
 
 #sharp {
@@ -74,17 +128,51 @@ html {
 
 textarea {
 	resize: none;
-	width: 200px;
-	height: 100px;
 	overflow: auto;
 }
 
-.well {
+.table {
+	margin-bottom: 0;
+}
+
+.UI {
+	display: flex;
+	flex: auto;
+  -webkit-box-align: center;
+  align-items: center;
+  justify-content: center;
+	padding-bottom: 0;
+	min-height: 575px;
+}
+
+.well-md {
+	width: 70%;
+	height: 45%;
+	padding: 0;
 	margin: 0;
-	width: 450px;
-	height: 359px;
+	display: flex;
+	-webkit-box-align: center;
+	align-items: center;
+	justify-content: center;
+	
+}
+
+.well-lg {
+	margin: 0;
+	width: 550px;
+	height: 499px;
 	float: right;
-	border-radius: 1px;
+	border-radius: 0;
+	padding-top: 6px;
+	padding-left: 12px;
+	padding-right: 12px;
+}
+
+#wrapper {
+	height: 100%;
+	min-height: 100% !important;
+	display: flex;
+	flex-direction: column;
 }
 
 
