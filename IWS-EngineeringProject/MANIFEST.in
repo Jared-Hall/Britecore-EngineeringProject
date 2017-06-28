@@ -1,0 +1,3 @@
+graft SM_SYS/static
+graft SM_SYS/templates
+include SM_SYS/db.sql
