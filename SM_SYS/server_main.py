@@ -1,48 +1,29 @@
-import os
-import sqlite3
+#----------------------------------IMPORTS--------------------------------------
+import argparse, pprint
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, json
-
+from flask_sqlalchemy import SQLAlchemy
+from database.DB import ServerDB
 #creates a WSGI complient flask web app
+#----------------------------------GLOBALS--------------------------------------
 Web_App = Flask(__name__)
+database = None
 
-
-#=================================Database Section=============================
-#configures db
-Web_App.config.update(dict(
-	DATABASE=os.path.join(Web_App.root_path, 'SM_SYS.db'),
-	SECRET_KEY='dev key',
-	USERS = {"admin":"password"}
-))
-
-def connect_db():
-	db = sqlite3.connect(Web_App.config["DATABASE"])
-	db.row_factory = sqlite3.Row
-	return db
-
-def get_db():
-	if not hasattr(g, 'sqlite_db'):
-		g.sqlite_db = connect_db()
-	return g.sqlite_db
-
-@Web_App.teardown_appcontext
-def close_db(error):
-	if hasattr(g, 'sqlite_db'):
-		g.sqlite_db.close()
-
-def init_db():
-	db = get_db()
-	with Web_App.open_resource('db.sql', mode='r') as fin:
-		db.cursor().executescript(fin.read())
-	db.commit()
+#----------------------------------PARSE ARGUMENTS------------------------------
+def parse_args():
+	disc = "This is the server script for the Software Management System."
+	parser = argparse.ArgumentParser(description=disc)
 	
-@Web_App.cli.command('initdb')
-def initdb_command():
-	init_db()
-	print('Database initialized.')
+	hint = "The install option: enter it to install the server. Usage -install <run|install>. The default is <run>"
+	parser.add_argument('-install', default="run", help=hint)
+	
+	hint = "Use this argument to serve over the internet. Usage server_main.py -inet <inet|local>. The default is <local>."
+	parser.add_argument('-inet', default="local", help=hint)
+	
+	
+	args = parser.parse_args()
+	return vars(args)
 
-#==============================================================================
-
-#==================================Web Model================================
+#==================================Web Section================================
 
 #The index page serves as the "landing zone" for all initial web traffic.
 #It handels the login
@@ -65,6 +46,7 @@ def login():
 		if(user['ID']=='admin' and user['pass']!=''):
 			session['logged_in'] = True
 			session['is_man'] = True
+			print(user['pass'])
 			response = Web_App.response_class(json.dumps({"logged_in":session['logged_in'], "is_man":session['is_man']}), content_type='application/json')
 		else:
 			response = Web_App.response_class(json.dumps({"logged_in":False}), content_type='application/json')
@@ -97,7 +79,7 @@ def systems(method):
 				#if method is selected, return a dictionary containing the data of the selected system
 				sys_id = request.args.get('id')
 				#================REPLACE WITH DB====================
-				systems = {"name": sys_id, "num_features": 12, "clients": ["Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C","Client A", "Client B", "Client C"], "areas":['Policies', 'Billing', 'Claims', 'Reports'], "status": "In Development", "disc": "This is where a discription of the softwaresystem would go."}
+				systems = {"name": sys_id, "num_features": 12, "clients": ["Client A", "Client B", "Client C"], 'areas':['Polcies', 'Billing', 'Claims', 'Reports'], "status": "In Development", "disc": "This is where a discription of the softwaresystem would go."}
 				#===================================================
 			else:
 				raise Exception("Method_Error")
@@ -182,5 +164,16 @@ def features(method):
 
 	return response
 
-if __name__ == '__main__':
-	Web_App.run()
+#main function
+def main():
+	if(__name__ == '__main__'):
+		#parse the command line arguments
+		args = parse_args()
+		
+		#initialize and fetch a new database instance
+		global database
+		database = ServerDB(Web_App, args['install'])
+
+		Web_App.run()
+		
+main()
