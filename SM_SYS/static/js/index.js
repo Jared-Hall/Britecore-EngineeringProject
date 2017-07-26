@@ -36,11 +36,15 @@ function SMSviewModel() {
 	self.selected = ko.observable(false);
 	self.post = false;
 	self.result = "";
+	self.selected_id = ko.observable();
+	self.alert = ko.observable(false);
+	self.alert_body = ko.observable("None");
+	self.alert_style = ko.observable("alert-danger");
 	
 	//                          Section 1.2
 	//                        Login Variables
-	self.ID = ko.observable();
-	self.pass = ko.observable();
+	self.ID = ko.observable("");
+	self.pass = ko.observable("");
 	self.is_man = false;
 	self.logged_in = ko.observable(false);
 	
@@ -79,7 +83,7 @@ function SMSviewModel() {
 	//                            Login Ajax
 	
 	self.post_login = function() {
-		//call server to validate input username and password
+		//call server to login
 		$.ajax({url: "/login",
 				type: "post",
 				contentType: "application/json",
@@ -88,10 +92,13 @@ function SMSviewModel() {
 											if (result.logged_in === true) {
 												self.is_man = result.is_man;
 												self.logged_in(true);
+												self.alert(false);
 												self.load_ds();
 												}
 											else {
-												alert("Incorrect ID/Pass");
+													self.alert(true);
+													self.alert_body("<strong>Error:</strong> Incorrect ID/Password");
+													self.alert_style("alert-danger");
 												}
 										  },
 				});
@@ -118,6 +125,7 @@ function SMSviewModel() {
 				data: {'id':system},
 				success: function(result) {
 											self.sys_name(result.name);
+											self.selected_id(result.name);
 											self.sys_disc(result.disc);
 											self.sys_num_feature(result.num_features);
 											self.sys_clients(result.clients);
@@ -127,6 +135,7 @@ function SMSviewModel() {
 											self.sys_del(true);
 											self.post = false;
 											self.edit(true);
+											self.alert(false);
 										  }
 			   });
 	};
@@ -138,7 +147,12 @@ function SMSviewModel() {
 				contentType: 'application/json',
 				success: function (result) {
 												if (result !== false) {self.systems(result);}
-												else {alert('You are not logged in'); self.get_login();}
+												else {
+													self.alert(true);
+													self.alert_body("<strong>Error:</strong> You were not logged in");
+													self.alert_style("alert-danger");
+													self.get_login();
+													}
 											}
 				});
 	};
@@ -148,13 +162,18 @@ function SMSviewModel() {
 		$.ajax({url: "/systems/null",
 				type: "update",
 				contentType: "application/json",
-				data: ko.toJSON({"name":self.sys_name(),
+				data: ko.toJSON({"sel_id":self.selected_id(),
+								"name":self.sys_name(),
 								"disc":self.sys_disc(),
 								"num_feature":self.sys_num_feature(),
 								"clients":self.sys_clients(),
 								"status":self.sys_status(),
 								"areas": self.sys_areas()}),
-				success: function () {alert("The System: "+self.sys_name()+" has been successfully updated.");}
+				success: function () {
+										self.alert(true);
+										self.alert_body("The System: "+self.sys_name()+" has been successfully updated.");
+										self.alert_style("alert-info");
+										}
 				});
 	};
 	
@@ -169,7 +188,10 @@ function SMSviewModel() {
 								"clients":self.sys_clients(),
 								"status":self.sys_status(),
 								"areas":self.sys_areas()}),
-				success: function () {alert("The system: "+self.sys_name()+" has been successfully added to the database.");
+				success: function () {
+									  self.alert(true);
+									  self.alert_body("The system: "+self.sys_name()+" has been successfully added to the database.");
+									  self.alert_style("alert-info");
 									  self.edit(true);
 									  self.sys_del(true);
 									  }
@@ -181,7 +203,11 @@ function SMSviewModel() {
 			   type: "delete",
 			   contentType: "application/json",
 			   data: ko.toJSON({"name":self.sys_name()}),
-			   success: function () {alert("The System: "+self.sys_name()+" has been successfully deleted.");}
+			   success: function () {
+									  self.alert(true);
+									  self.alert_body("The system: "+self.sys_name()+" has been successfully deleted.");
+									  self.alert_style("alert-info");
+									}
 				});	
 	};
 	
@@ -194,7 +220,12 @@ function SMSviewModel() {
 				data: {'system':self.sys_name()},
 				success: function (result) {
 											if (result !== false) {self.features(result);}
-											else {alert('You are not logged in'); load_login();}
+											else {
+													self.alert(true);
+													self.alert_body("<strong>Error:</strong> You were not logged in");
+													self.alert_style("alert-danger");
+													load_login();
+												 }
 											 }
 				});
 	};
@@ -208,6 +239,7 @@ function SMSviewModel() {
 				data: {'system': self.sys_name(), 'feature': feature},
 				success: function(result) {
 											self.feat_title(result.feat_title);
+											self.selected_id(result.feat_title);
 											self.feat_disc(result.feat_disc);
 											self.feat_client(result.feat_client);
 											self.feat_priority(result.feat_priority);
@@ -217,6 +249,7 @@ function SMSviewModel() {
 											self.sys_del(false);
 											self.post = false;
 											self.edit(false);
+											self.alert(false);
 										  }
 			   });
 	};
@@ -225,14 +258,19 @@ function SMSviewModel() {
 		$.ajax({url: "/features/null",
 				type: "update",
 				contentType: "application/json",
-				data: ko.toJSON({"system":self.sys_name(),
+				data: ko.toJSON({"sel_id": self.selected_id(),
+								"system":self.sys_name(),
 								"feat_title":self.feat_title(),
 								"feat_disc":self.feat_disc(),
 								"feat_client": self.feat_client(),
-								"feat_priority":self.feat_priority(),
+								"feat_priority":parseInt(self.feat_priority()),
 								"feat_date":self.feat_date(),
 								"feat_area":self.feat_area()}),
-				success: function () {alert("The feature: "+self.feat_title()+" has been successfully updated.");}
+				success: function () {
+										self.alert(true);
+										self.alert_style("alert-info");
+										self.alert_body("The feature: "+self.feat_title()+" has been successfully updated.");
+									 }
 				 });
 	};
 	
@@ -244,11 +282,14 @@ function SMSviewModel() {
 								"feat_title":self.feat_title(),
 								"feat_disc":self.feat_disc(),
 								"feat_client": self.feat_client(),
-								"feat_priority":self.feat_priority(),
+								"feat_priority": parseInt(self.feat_priority()),
 								"feat_date":self.feat_date(),
 								"feat_area":self.feat_area()}),
-				success: function () {alert("The feature: "+self.feat_title()+" has been successfully added to the database.");
-									 self.sys_del(true);}
+				success: function () {
+										self.alert(true);
+										self.alert_style("alert-info");
+										self.alert_body("The feature: "+self.feat_title()+" has been successfully added to the database.");
+										self.sys_del(true);}
 				});
 	};
 	
@@ -256,8 +297,12 @@ function SMSviewModel() {
 		$.ajax({url: "/features/null",
 			   type: "delete",
 			   contentType: "application/json",
-			   data: {"system" : self.sys_name(), "feature": self.feat_title()},
-			   success: function () {alert("The Feature: "+self.feat_title()+" has been successfully deleted.");}
+			   data: ko.toJSON({"system" : self.sys_name(), "feature": self.feat_title()}),
+			   success: function () {
+										self.alert(true);
+										self.alert_style("alert-info");
+										self.alert_body("The feature: "+self.feat_title()+" has been successfully deleted.");
+									}
 				});
 	};
 	
@@ -309,11 +354,13 @@ function SMSviewModel() {
 		self.sys_areas([]);
 		self.selected(false);
 		self.sys_del(false);
+		self.alert(false);
 		self.current_panel(self.current_panel()); //reloads curent panel 
 	};
 	
 	self.clear_features = function () {
 		self.edit(false);
+		self.alert(false);
 		self.feat_title("");
 		self.feat_disc("");
 		self.feat_client("");
@@ -335,7 +382,12 @@ function SMSviewModel() {
 		self.sys_del(false);
 		self.post = true;
 		self.edit(false);
+		self.alert(false);
 	};
+	
+	self.dismiss = function () {
+		self.alert(false);
+		};
 
 	//                     Section 3.2
 	//                    Login Functions
@@ -358,6 +410,7 @@ function SMSviewModel() {
 		self.get_systems_all();
 		
 		//populate panel databindings and render template
+		self.alert(false);
 		self.panel_header("Display Systems");
 		self.current_panel('DS-template'); 
 	};
@@ -368,6 +421,7 @@ function SMSviewModel() {
 		//clear variables of previous data
 		self.clear_features();
 		self.clear_systems();
+		self.alert(false);
 		
 		//get a list of systems from the server
 		self.get_systems_all();
@@ -415,13 +469,14 @@ function SMSviewModel() {
 		if(self.post === false ) {
 			//update system data in server
 			self.update_system();
-			//update the systems display - because user may have changed the systems name or added systems
+			//update the systems display
 			self.get_systems_all();
 		}
 		else {
 			//Sends form data to server to create a new system object with if form is filled in
 			if(self.valid_system()) {
 				self.post_system();
+				self.get_systems_all();
 			}
 		}
 	};
@@ -438,6 +493,7 @@ function SMSviewModel() {
 		if(self.sys_client_id() !== "") {
 			if(self.sys_clients.indexOf(self.sys_client_id()) === -1) {
 				self.sys_clients.push(self.sys_client_id());
+				self.sys_client_id("");
 				}
 			else {alert("Client already exists.");}
 		}
@@ -448,6 +504,7 @@ function SMSviewModel() {
 		if(self.sys_client_id() !== "") {
 			if(self.sys_clients.indexOf(self.sys_client_id()) !== -1) {
 				self.sys_clients.remove(self.sys_client_id());
+				self.sys_client_id("");
 				}
 			else {alert("Client does not exist.");}
 		}
@@ -458,6 +515,7 @@ function SMSviewModel() {
 		if(self.sys_area_id() !== "") {
 			if(self.sys_areas.indexOf(self.sys_area_id()) === -1) {
 				self.sys_areas.push(self.sys_area_id());
+				self.sys_area_id("");
 				}
 			else {alert("Product area already exists.");}
 		}
@@ -468,10 +526,19 @@ function SMSviewModel() {
 		if(self.sys_area_id() !== "") {
 			if(self.sys_areas.indexOf(self.sys_area_id()) !== -1) {
 				self.sys_areas.remove(self.sys_area_id());
+				self.sys_area_id("");
 				}
 			else {alert("Product area does not exist.");}
 		}
 		else {alert("No product area entered.");}
+	};
+	
+	self.fill_client = function(selected) {
+	self.sys_client_id(selected);	
+	};
+	
+	self.fill_area = function(selected) {
+	self.sys_area_id(selected);	
 	};
 	
 	//                      Section 3.5
@@ -485,6 +552,7 @@ function SMSviewModel() {
 		
 		//render panel
 		self.manage(true);
+		self.alert(false);
 		self.selected(false);
 		self.panel_header("Manage Features");
 		self.current_panel('MF-template');
@@ -498,6 +566,7 @@ function SMSviewModel() {
 		self.sys_del(false);
 		self.post = true;
 		self.edit(true);
+		self.alert(false);
 	};
 		
 	self.edit_feature = function () {
@@ -505,6 +574,10 @@ function SMSviewModel() {
 		self.edit(true);
 		self.sys_del(true);
 	};
+	
+	self.edit_computed = ko.pureComputed(function(){
+	return !self.edit() && self.selected();
+	}, this);
 	
 	self.valid_feature = function() {
 		var is_valid = true;
@@ -537,6 +610,7 @@ function SMSviewModel() {
 			//Sends form data to server to create a new system object with
 			if(self.valid_feature()) {
 			self.post_feature();
+			self.get_features_all();
 			}
 		}
 	};

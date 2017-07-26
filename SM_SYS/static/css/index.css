@@ -5,6 +5,10 @@
  *			   css can be applied to the entire widget via one file
  *			   saving space. This file is organized alphabetically.
  */
+.alert {
+	margin-bottom: 1px;
+	padding: 1px;
+}
 
 body, html {
 	height: 100%;

@@ -1,60 +1,56 @@
 """
 Programmed by: Jared Hall
 Discription: This is the database models file for the server database.
-All of the SQL-Alchemy classes are in here
+All of the SQL-Alchemy classes are in here.
 """
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.orderinglist import ordering_list, count_from_1
+database = SQLAlchemy()
 
-class Users(db.Model):
-	username = db.Column(db.String(30), primary_key=True, unique=True)
-	password = db.Column(db.String(120))
-	auth = db.Column(db.Boolean)
-	
-	def __init__(self, username, password, auth):
-		self.username = username
-		self.password = password
-		self.auth = auth
+class Users(database.Model):
+	username = database.Column(database.String(30), primary_key=True, unique=True)
+	password = database.Column(database.String(120))
+	auth = database.Column(database.Boolean)
+
 		
-class System(db.Model):
-	sys_id = db.Column(db.String(120), primary_key=True, unique=True)
-	disc = db.Column(db.Text)
-	num_feat = db.Column(db.Integer)
-	status = db.Column(db.String(30))
-	product_areas = db.relationship('Areas', backref='system', lazy='dynamic')
+class Systems(database.Model):
+	sys_id = database.Column(database.String(120), primary_key=True, unique=True)
+	disc = database.Column(database.Text)
+	num_feat = database.Column(database.Integer)
+	status = database.Column(database.String(30))
+	product_areas = database.relationship('Areas', backref='systems', lazy="dynamic")
+	clients = database.relationship('Clients', backref='systems', lazy="dynamic")
+	features = database.relationship('Features', order_by="Features.feat_priority", collection_class=ordering_list('feat_priority', count_from=1))
+
 	
-	def __init__(self, sys_id, disc, num_feat, status):
-		self.sys_id = sys_id
-		self.disc = disc
-		self.num_feat = num_feat
-		self.status = status
-	
-class Clients(db.Model):
-	client_name = db.Column(db.String(60), primary_key=True,)
-	sys_id = db.Column(db.String(120), primary_key=True,)
-	
-	def __init__(self, client_name, sys_id):
-		self.client_name = client_name
-		self.sys_id = sys_id
+class Clients(database.Model):
+	client_name = database.Column(database.String(60), primary_key=True,)
+	sys_id = database.Column(database.String(120), database.ForeignKey('systems.sys_id'), primary_key=True,)
+
 		
-class Areas(db.Model):
-	product_area = db.Column(db.String(120), primary_key=True,)
-	sys_id = db.Column(db.String(120), primary_key=True,)
-	
-	def __init__(self, product_area, sys_id):
-		self.product_area = product_area
-		self.sys_id = sys_id
+class Areas(database.Model):
+	product_area = database.Column(database.String(120), primary_key=True,)
+	sys_id = database.Column(database.String(120), database.ForeignKey('systems.sys_id'), primary_key=True,)
+
 		
-class Features(db.Model):
-	sys_id = db.Column(db.String(120), primary_key=True,)
-	feat_title = db.Column(db.String(120), primary_key=True,)
-	feat_disc = db.Column(db.Text)
-	feat_date = db.Column(db.String(10))
-	client_name = db.Column(db.String(30),)
-	feat_priority = db.Column(db.Integer)
-	
-	def __init__(self, sys_id, feat_title, feat_disc, feat_date, client_name, feat_priority):
-		self.sys_id = sys_id
-		self.feat_title = feat_title
-		self.feat_disc = feat_disc
-		self.feat_date = feat_date
-		self.client_name = client_name
-		self.feat_priority = feat_priority
+class Features(database.Model):
+	sys_id = database.Column(database.String(120), database.ForeignKey('systems.sys_id'), primary_key=True,)
+	feat_title = database.Column(database.String(120), primary_key=True,)
+	feat_disc = database.Column(database.Text)
+	feat_date = database.Column(database.String(10))
+	client_name = database.Column(database.String(30))
+	feat_priority = database.Column(database.Integer)
+	feat_area = database.Column(database.String(120))
+
+#default entries into the database
+man1 = Users(username='man1', password="a722c63db8ec8625af6cf71cb8c2d939", auth=True)
+emp1 = Users(username='emp1', password="c1572d05424d0ecb2a65ec6a82aeacbf", auth=False)
+def_system = Systems(sys_id='Default System', disc='This is where a discription would go.', num_feat=1, status='In Planning')
+client1 = Clients(client_name='Client A', sys_id='Default System')
+client2 = Clients(client_name='Client B', sys_id='Default System')
+client3 = Clients(client_name='Client C', sys_id='Default System')
+area1 = Areas(product_area='Policies', sys_id='Default System')
+area2 = Areas(product_area='Billing', sys_id='Default System')
+area3 = Areas(product_area='Claims', sys_id='Default System')
+area4 = Areas(product_area='Reports', sys_id='Default System')
+def_feature = Features(sys_id='Default System', feat_title='Default Feature', feat_disc='This is where the feature discription would go.', feat_date='06/29/2017', client_name='Client A', feat_priority=1, feat_area='Policies')
