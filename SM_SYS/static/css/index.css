@@ -1,3 +1,15 @@
+/*Software management systems CSS File
+ *Programmed by: Jared Hall
+ *Discription: This is the Css file for the whole page.
+ *			   One of the benifits of doing an SPA widget is that
+ *			   css can be applied to the entire widget via one file
+ *			   saving space. This file is organized alphabetically.
+ */
+.alert {
+	margin-bottom: 1px;
+	padding: 1px;
+}
+
 body, html {
 	height: 100%;
 	min-height: 100%;
@@ -14,6 +26,11 @@ body, html {
 	overflow: auto;
 }
 
+#display {
+	overflow: auto;
+	height: 100%;
+}
+
 .display_clients {
 	width: 100%;
 	height: 45px;
@@ -22,6 +39,15 @@ body, html {
 	box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
 	padding: 0;
 	overflow: auto;
+}
+
+#display_label {
+	display: block;
+	height: 30px;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 }
 
 #display_panel {
@@ -36,20 +62,6 @@ body, html {
 	border-top-right-radius: 0;
 }
 
-#display {
-	overflow: auto;
-	height: 100%;
-}
-
-#display_label {
-	display: block;
-	height: 30px;
-	border-bottom-right-radius: 0;
-	border-bottom-left-radius: 0;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
-}
-
 .footer {
 	min-width: 702px !important;
   width: 100%;
@@ -59,6 +71,10 @@ body, html {
 	margin-top: 10px;
 }
 
+.form-horizontal {
+	width: 60%;
+}
+
 .footer_title {
 	height: 35px;
 	width: 150px;
@@ -66,10 +82,6 @@ body, html {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	}
-
-.form-horizontal {
-	width: 60%;
 }
 
 .header{
@@ -100,14 +112,16 @@ body, html {
   color: #FFFFFF;
 }
 
+.page-header, h4 {
+	margin: 0;
+}
+
 .panel-body {
 	padding: 0;
 	margin: 0;
 }
 
-.page-header, h4 {
-	margin: 0;
-}
+
 
 .portal {
 	width: 702px;
@@ -126,23 +140,34 @@ body, html {
 	border-top-right-radius: 0;
 }
 
+.table {
+	margin-bottom: 0;
+}
+
 textarea {
 	resize: none;
 	overflow: auto;
 }
 
-.table {
-	margin-bottom: 0;
-}
-
 .UI {
 	display: flex;
 	flex: auto;
-  -webkit-box-align: center;
-  align-items: center;
-  justify-content: center;
+	-webkit-box-align: center;
+	align-items: center;
+	justify-content: center;
 	padding-bottom: 0;
 	min-height: 575px;
+}
+
+.well-lg {
+	margin: 0;
+	width: 550px;
+	height: 499px;
+	float: right;
+	border-radius: 0;
+	padding-top: 6px;
+	padding-left: 12px;
+	padding-right: 12px;
 }
 
 .well-md {
@@ -155,17 +180,6 @@ textarea {
 	align-items: center;
 	justify-content: center;
 	
-}
-
-.well-lg {
-	margin: 0;
-	width: 550px;
-	height: 499px;
-	float: right;
-	border-radius: 0;
-	padding-top: 6px;
-	padding-left: 12px;
-	padding-right: 12px;
 }
 
 #wrapper {
