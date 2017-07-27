@@ -173,6 +173,7 @@ function SMSviewModel() {
 										self.alert(true);
 										self.alert_body("The System: "+self.sys_name()+" has been successfully updated.");
 										self.alert_style("alert-info");
+										self.get_systems_all();
 										}
 				});
 	};
@@ -194,6 +195,7 @@ function SMSviewModel() {
 									  self.alert_style("alert-info");
 									  self.edit(true);
 									  self.sys_del(true);
+									  self.get_systems_all();
 									  }
 				});
 	};
@@ -207,6 +209,7 @@ function SMSviewModel() {
 									  self.alert(true);
 									  self.alert_body("The system: "+self.sys_name()+" has been successfully deleted.");
 									  self.alert_style("alert-info");
+									  self.get_systems_all();
 									}
 				});	
 	};
@@ -270,6 +273,7 @@ function SMSviewModel() {
 										self.alert(true);
 										self.alert_style("alert-info");
 										self.alert_body("The feature: "+self.feat_title()+" has been successfully updated.");
+										self.get_features_all();
 									 }
 				 });
 	};
@@ -289,7 +293,9 @@ function SMSviewModel() {
 										self.alert(true);
 										self.alert_style("alert-info");
 										self.alert_body("The feature: "+self.feat_title()+" has been successfully added to the database.");
-										self.sys_del(true);}
+										self.sys_del(true);
+										self.get_features_all();
+										}
 				});
 	};
 	
@@ -302,6 +308,7 @@ function SMSviewModel() {
 										self.alert(true);
 										self.alert_style("alert-info");
 										self.alert_body("The feature: "+self.feat_title()+" has been successfully deleted.");
+										self.get_features_all();
 									}
 				});
 	};
@@ -469,24 +476,21 @@ function SMSviewModel() {
 		if(self.post === false ) {
 			//update system data in server
 			self.update_system();
-			//update the systems display
-			self.get_systems_all();
 		}
 		else {
 			//Sends form data to server to create a new system object with if form is filled in
 			if(self.valid_system()) {
 				self.post_system();
-				self.get_systems_all();
 			}
 		}
 	};
 	
 	self.delete_sys = function () {
-		//Calls server to delete the system from the DB
-		self.delete_system();
 		//reloads the display
 		self.clear_systems();
-		self.get_systems_all();
+		//Calls server to delete the system from the DB
+		self.delete_system();
+		
 	};
 		
 	self.add_client = function () {
@@ -603,24 +607,22 @@ function SMSviewModel() {
 		if(self.post === false) {
 			//update feature data in server
 			self.update_feature();
-			//update the features display - because user may have changed the features name or added features
-			self.get_features_all();
 		}
 		else {
 			//Sends form data to server to create a new system object with
 			if(self.valid_feature()) {
 			self.post_feature();
-			self.get_features_all();
 			}
 		}
 	};
 	
 	self.delete_feat = function () {
-		//Calls server to delete the feature from the DB
-		self.delete_feature();
 		//reloads the display
 		self.clear_features();
-		self.get_features_all();
+		
+		//Calls server to delete the feature from the DB
+		self.delete_feature();
+		
 	};
 		
 	self.select_client = function (client) {
