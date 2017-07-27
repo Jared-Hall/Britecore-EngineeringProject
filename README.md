@@ -5,7 +5,7 @@
 This is an engineering project for Britecore. The goal of this project is to demonstrate my proficiency with the companies tech stack and basic engineering concepts. This project features a web app for technical member to submit feature requests for a software system. 
 
 ## Layout of Web Application
-![alt-text](https://github.com/Jared-Hall/Britecore-EngineeringProject/Design/LYT.png)
+![alt-text](https://github.com/Jared-Hall/Britecore-EngineeringProject/blob/master/Design/LYT.png)
 
 ## Cloud Service
 Link to cloud service:  http://sm-sys.us-west-2.elasticbeanstalk.com/
