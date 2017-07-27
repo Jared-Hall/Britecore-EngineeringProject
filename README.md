@@ -26,7 +26,7 @@ Employee:
 ID: emp1
 Password: pass2
 
-**Display Systems: **
+**Display Systems:**
 
 *If your login role is a Manager:*
 Click manage systems to manage the software systems attached to this companies platform.
@@ -34,7 +34,7 @@ Click manage systems to manage the software systems attached to this companies p
 *For either role:*
 Click on a system in the display bar to select it. Upon selection you can click on "Manage Features" to go to the Manage Features frame.
 
-**Manage Systems: **
+**Manage Systems:**
 
 *To create a new system:*
 Click "New System", then fill out the form and click "Save system".
@@ -48,7 +48,7 @@ First select a system, then click "Delete System".
 *To manage a selected systems features:*
 First, select a system by clicking on its label in the display bar. Then click "Manage Features" to go to the manage features frame.
 
-**Manage Features: **
+**Manage Features:**
 
 *To add a new request for a feature:*
 Click "New Feature", fill out the form, and then click "Save Feature" to post the new feature rquest to the server.
