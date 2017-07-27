@@ -15,7 +15,9 @@ Link to cloud service:  http://sm-sys.us-west-2.elasticbeanstalk.com/
 
 ## Howto
 This howto is organized by each of the portal frames specified in the Layout section
+
 **Login:**
+
 Login roles: 
 
 Manager
