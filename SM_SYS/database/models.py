@@ -4,7 +4,7 @@ Discription: This is the database models file for the server database.
 All of the SQL-Alchemy classes are in here.
 """
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.ext.orderinglist import ordering_list, count_from_1
+from sqlalchemy.ext.orderinglist import ordering_list
 database = SQLAlchemy()
 
 class Users(database.Model):

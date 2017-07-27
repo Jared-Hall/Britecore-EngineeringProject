@@ -1,25 +1,23 @@
-import os, sys, traceback
+import os, sys, traceback, logging
 from flask import Flask, request, session, url_for, abort, render_template, json
-
-#creates a WSGI complient flask web app
-Web_App = Flask(__name__)
-
-#flask app reference for AWS elastic beanstalk
-application = Web_App
-#----------------------------------DATABASE DEFINITION--------------------------
-#import the database models
 from database.models import *
 
+#creates a WSGI complient flask web app
+application = Flask(__name__)
+
+#flask app reference for AWS elastic beanstalk
+logging.basicConfig(filename='opt/python/log/sms_debug.log', level=logging.DEBUG)
+#----------------------------------DATABASE DEFINITION--------------------------
 #Database configuration
-Web_App.config.from_object(__name__)
-Web_App.config.update(dict(
-	SQLALCHEMY_DATABASE_URI='sqlite:///'+os.path.join(Web_App.root_path + "/database", "SM_SYS.db"),
+application.config.from_object(__name__)
+application.config.update(dict(
+	SQLALCHEMY_DATABASE_URI='sqlite:///'+os.path.join(application.root_path + "/database", "SM_SYS.db"),
 	SQLALCHEMY_TRACK_MODIFICATIONS=False,
 	SECRET_KEY="a722c63db8ec8625af6cf71cb8c2d939"))
 
 #setup the database
-database.init_app(Web_App)
-Web_App.app_context().push()
+database.init_app(application)
+application.app_context().push()
 database.create_all()
 
 #If the default users and systems don't exist then input them
@@ -45,34 +43,34 @@ except Exception as e:
 
 #The index page serves as the "landing zone" for all initial web traffic.
 #It handels the login
-@Web_App.route('/', methods=['GET', 'POST'])
+@application.route('/', methods=['GET', 'POST'])
 def index():
 	error = None
 	return render_template('index.html', error=error)
 
 #this implements the login from the server side: fetches user profile from DB, validates input and logs user in/out
-@Web_App.route('/login', methods=['GET', 'POST'])
+@application.route('/login', methods=['GET', 'POST'])
 def login():
 	if(request.method == 'POST'):
 		#get input
 		user = request.json
-		response = Web_App.response_class(json.dumps({"logged_in":False}), content_type='application/json')
+		response = application.response_class(json.dumps({"logged_in":False}), content_type='application/json')
 		#load user profile from DB
 		profile = Users.query.filter_by(username=user['ID']).first()
 		if(profile is not None):
 			if(user['ID'] == profile.username and user['pass'] == profile.password):
 				session['logged_in'] = True
 				session['is_man'] = profile.auth
-				response = Web_App.response_class(json.dumps({"logged_in":session['logged_in'], "is_man":session['is_man']}), content_type='application/json')
+				response = application.response_class(json.dumps({"logged_in":session['logged_in'], "is_man":session['is_man']}), content_type='application/json')
 	elif(request.method == 'GET'):
 			session.pop('logged_in', None)
-			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			response = application.response_class(json.dumps(True), content_type='application/json')
 	else:
 		abort(404)
 	return response
 
 #this view allows the user to interct with the stored system data -system-wide operations are supported here
-@Web_App.route('/systems/<method>', methods=['GET', 'POST', 'UPDATE', 'DELETE'])
+@application.route('/systems/<method>', methods=['GET', 'POST', 'UPDATE', 'DELETE'])
 def systems(method):
 	response = None
 	logged_in = False;
@@ -101,7 +99,7 @@ def systems(method):
 						   "disc":item.disc}
 			else:
 				raise Exception("Method_Error")
-			response = Web_App.response_class(json.dumps(systems), content_type='application/json')
+			response = application.response_class(json.dumps(systems), content_type='application/json')
 			
 		elif(request.method == 'POST'):
 			#if request method is post, then save  new system to DB
@@ -125,9 +123,9 @@ def systems(method):
 					database.session.add(Areas(product_area=area, sys_id=data['name']))
 				
 				database.session.commit()
-				response = Web_App.response_class(json.dumps(True), content_type='application/json')
+				response = application.response_class(json.dumps(True), content_type='application/json')
 			else:
-				response = Web_App.response_class(json.dumps(False), content_type='application/json')
+				response = application.response_class(json.dumps(False), content_type='application/json')
 		
 		elif(request.method == 'UPDATE'):
 			#if request method is update, then overwrite system info in DB
@@ -153,7 +151,7 @@ def systems(method):
 				database.session.add(Areas(product_area=area, sys_id=data['name']))
 	
 			database.session.commit()
-			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			response = application.response_class(json.dumps(True), content_type='application/json')
 		
 		elif(request.method == 'DELETE'):
 			#if request method is delete, then remove system from DB
@@ -172,18 +170,18 @@ def systems(method):
 			database.session.query(Systems).filter_by(sys_id=name).delete()
 			
 			database.session.commit()
-			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			response = application.response_class(json.dumps(True), content_type='application/json')
 		else:
 			#an incorrect method was given
 			abort(404)
 	except:
 		traceback.print_exc(file=sys.stdout)
 		database.session.rollback()
-		response = Web_App.response_class(json.dumps(False), content_type='application/json')
+		response = application.response_class(json.dumps(False), content_type='application/json')
 
 	return response
 
-@Web_App.route('/features/<method>', methods=['GET', 'POST', 'UPDATE', 'DELETE'])
+@application.route('/features/<method>', methods=['GET', 'POST', 'UPDATE', 'DELETE'])
 def features(method):
 	response = None
 	logged_in = False;
@@ -216,7 +214,7 @@ def features(method):
 						   "feat_area": item.feat_area }
 			else:
 				raise Exception("Method_Error")
-			response = Web_App.response_class(json.dumps(feature), content_type='application/json')
+			response = application.response_class(json.dumps(feature), content_type='application/json')
 		elif(request.method == 'POST'):
 			#if request method is post, then update the priorities first and then save the new feature
 			#get a list of the current features so we can change their priority
@@ -244,7 +242,7 @@ def features(method):
 			system.num_feat += 1
 
 			database.session.commit()
-			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			response = application.response_class(json.dumps(True), content_type='application/json')
 		elif(request.method == 'UPDATE'):
 			#if request method is update, then overwrite feature info in system
 			data = json.loads(request.data)
@@ -279,7 +277,7 @@ def features(method):
 			#Commit the session, the ordering list handels the priority -thanks sql-alchemy
 			database.session.commit()
 			
-			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			response = application.response_class(json.dumps(True), content_type='application/json')
 			
 		elif(request.method == 'DELETE'):
 			#if request method is delete, then remove feature from system
@@ -299,16 +297,16 @@ def features(method):
 			
 			database.session.commit()
 			
-			response = Web_App.response_class(json.dumps(True), content_type='application/json')
+			response = application.response_class(json.dumps(True), content_type='application/json')
 		else:
 			#unsupported request method so we just return false
 			#=======================Replace with DB==================
-			response = Web_App.response_class(json.dumps(False), content_type='application/json')
+			response = application.response_class(json.dumps(False), content_type='application/json')
 			#========================================================
 	except:
 		traceback.print_exc(file=sys.stdout)
 		database.session.rollback()
-		response = Web_App.response_class(json.dumps(False), content_type='application/json')
+		response = application.response_class(json.dumps(False), content_type='application/json')
 
 	return response
 
