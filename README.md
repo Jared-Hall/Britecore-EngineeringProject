@@ -1,8 +1,8 @@
 [1]:  http://sm-sys.us-west-2.elasticbeanstalk.com/
-# IWS-EngineeringProject
+# Britecore-EngineeringProject
 
 ## Overview
-This is an engineering project for IWS. The goal of this project is to demonstrate my proficiency with the companies tech stack and basic engineering concepts. This project features a web app for technical member to submit feature requests to an existing piece of software.
+This is an engineering project for Britecore. The goal of this project is to demonstrate my proficiency with the companies tech stack and basic engineering concepts. This project features a web app for technical member to submit feature requests for a software system. 
 
 ## Software Management System High-Level Design(HLD)
 ![alt-text](https://github.com/Jared-Hall/IWS-EngineeringProject/Design/HLD.png)
