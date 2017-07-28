@@ -9,7 +9,7 @@ application = Flask(__name__)
 #Database configuration
 application.config.from_object(__name__)
 application.config.update(dict(
-	SQLALCHEMY_DATABASE_URI='mysql+pymysql://Jared007:Smspass1@sms-db.ccapjqufkw2l.us-west-2.rds.amazonaws.com:3306/sms_db',
+	SQLALCHEMY_DATABASE_URI='mysql+pymysql://Jared007:Smspass1@db-ohio.cozswnptevjj.us-east-2.rds.amazonaws.com:3306/sms_db',
 	SQLALCHEMY_TRACK_MODIFICATIONS=False,
 	SECRET_KEY="a722c63db8ec8625af6cf71cb8c2d939"))
 
