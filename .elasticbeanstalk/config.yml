@@ -1,6 +1,6 @@
 branch-defaults:
   master:
-    environment: null
+    environment: SMS-Env
     group_suffix: null
 global:
   application_name: SMS_App
