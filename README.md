@@ -1,4 +1,4 @@
-# Britecore-EngineeringProject
+# Engineering Project
 
 ## Overview
 This is an engineering project for Britecore. The goal of this project is to demonstrate my proficiency with the companies tech stack and basic engineering concepts. This project features a web app for a technical member to submit feature requests for a software system. 
